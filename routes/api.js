@@ -16,6 +16,11 @@ router.get("/", (req, res) => {
         key,
       });
     }
+    else {
+      res.json({
+        message: 'could not get the key'
+      })
+    }
   });
 });
 
@@ -32,7 +37,7 @@ router.get("/track/:key", (req, res) => {
   }
   console.log(ip);
   db.findOne({key}, (err, doc) => {
-    if(!err){
+    if(!err && doc){
       const views = doc.views
       views.push({date: Date.now(), location, ua})
       db.update(
