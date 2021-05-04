@@ -28,6 +28,7 @@ router.get("/", (req, res) => {
 router.get("/track/:key", (req, res) => {
   const key = req.params.key;
   const ua = parser(req.headers["user-agent"]);
+  console.log(JSON.stringify(req.headers, null, 2));
   const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
   let location = {};
   if (ip != "::1") {
