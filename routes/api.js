@@ -6,20 +6,20 @@ const Datastore = require("nedb");
 const db = new Datastore({ filename: "db", autoload: true });
 const { getRandomString } = require("../utils/random-string");
 
-
 /* GET home page. */
 router.get("/", (req, res) => {
   const key = getRandomString(5);
-  db.insert({ key, views: [] }, (err) => {
+  const password = getRandomString(10);
+  db.insert({ key, views: [], password }, (err) => {
     if (!err) {
       res.json({
         key,
+        password,
       });
-    }
-    else {
+    } else {
       res.json({
-        message: 'could not get the key'
-      })
+        message: "could not get the key",
+      });
     }
   });
 });
@@ -37,30 +37,30 @@ router.get("/track/:key", (req, res) => {
     location = { city: "localhost" };
   }
   console.log(ip);
-  db.findOne({key}, (err, doc) => {
-    if(!err && doc){
-      const views = doc.views
-      views.push({date: Date.now(), location, ua})
+  db.findOne({ key }, (err, doc) => {
+    if (!err && doc) {
+      const views = doc.views;
+      views.push({ date: Date.now(), location, ua });
       db.update(
         { key },
         { $set: { views } },
         { multi: true },
-        (err, numReplaced) => {
-        }
+        (err, numReplaced) => {}
       );
     }
-  })
+  });
   res.sendfile("public/0.png");
 });
 
-router.get('/check/:key', (req, res) => {
+router.get("/check/:key/:password", (req, res) => {
   const key = req.params.key;
-  db.findOne({key}, (err, doc) => {
-    if(!err){
-      res.json(doc)
+  const password = req.params.password;
+  db.findOne({ key, password }, (err, doc) => {
+    if (!err) {
+      res.json(doc);
     }
-  })
-}) 
+  });
+});
 
 module.exports = router;
 
